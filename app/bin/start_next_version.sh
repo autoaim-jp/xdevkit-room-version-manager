@@ -76,8 +76,9 @@ function switch_submodule_new_branch () {
 function push_project_new_branch () {
   PROJECT_DIR_PATH=$1
   NEXT_VERSION=$2
+  ORIGIN=$3
   pushd $PROJECT_DIR_PATH > /dev/null
-  git push github $NEXT_VERSION
+  git push $ORIGIN $NEXT_VERSION
   echo "[info] ${PROJECT_DIR_PATH} の ${NEXT_VERSION} をpushしました。"
   popd > /dev/null
 }
@@ -87,7 +88,7 @@ function update_submodule () {
   NEXT_VERSION=$2
   check_submodule_is_master_branch $SUBMODULE_DIR_PATH
   switch_project_new_branch $SUBMODULE_DIR_PATH $NEXT_VERSION
-  push_project_new_branch $SUBMODULE_DIR_PATH $NEXT_VERSION
+  push_project_new_branch $SUBMODULE_DIR_PATH $NEXT_VERSION github
 }
 
 function exec_make_and_commit () {
@@ -137,16 +138,16 @@ function main () {
   
   check_project_is_master_branch "xlogin-jp-client-sample"
   switch_project_new_branch "xlogin-jp-client-sample" $NEXT_VERSION
-  push_project_new_branch "xlogin-jp-client-sample" $NEXT_VERSION
+  push_project_new_branch "xlogin-jp-client-sample" $NEXT_VERSION origin
   
   check_project_is_master_branch "xlogin-jp"
   switch_project_new_branch "xlogin-jp" $NEXT_VERSION
-  push_project_new_branch "xlogin-jp" $NEXT_VERSION
+  push_project_new_branch "xlogin-jp" $NEXT_VERSION origin
   
   check_project_is_master_branch "xdevkit"
   check_gitmodules_has_master_branch "xdevkit"
   switch_project_new_branch "xdevkit" $NEXT_VERSION
-  switch_submodule_new_branch "xdevkit"
+  switch_submodule_new_branch "xdevkit" $NEXT_VERSION
   
   update_submodule "standalone/xdevkit-view-compiler" $NEXT_VERSION
   update_submodule "standalone/xdevkit-eslint" $NEXT_VERSION
@@ -159,9 +160,9 @@ function main () {
   # submoduleの新ブランチで変更がある場合は.gitmodulesも新ブランチにしたほうがいい
   # そうでないならばmasterのほうがいい。なぜなら新ブランチは消すので。
   exec_make_and_commit "xdevkit" $NEXT_VERSION
-  push_project_new_branch "xdevkit" $NEXT_VERSION
+  push_project_new_branch "xdevkit" $NEXT_VERSION origin
 }
 
-main $1
+main ${1:-0}
 
 
