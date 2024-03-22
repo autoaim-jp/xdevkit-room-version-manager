@@ -68,7 +68,9 @@ function create_pull_request () {
   FEATURE_VERSION=$2
   pushd $PROJECT_DIR_PATH > /dev/null
 
+  echo "========== Merge pull request ==========" 
   gh pr create --base master --head $FEATURE_VERSION --title "merge: ${FEATURE_VERSION} from xdevkit-room-version-manager" --body ""
+  echo "========================================"
 
   popd > /dev/null
 }
@@ -121,6 +123,17 @@ function switch_gitmodules_master () {
   popd > /dev/null
 }
 
+function commit_submodule () {
+  PROJECT_DIR_PATH=$1
+  pushd $PROJECT_DIR_PATH > /dev/null
+
+  git add .
+  git commit -a -m 'update: .gitmodules and submodule for merge'
+  echo "[info] サブモジュールの設定変更をcommitしました。"
+
+  popd > /dev/null
+}
+
 function main () {
   FEATURE_VERSION=$1
   echo "[info] FEATURE_VERSION: $FEATURE_VERSION"
@@ -128,25 +141,25 @@ function main () {
     echo "[error] 不正なブランチ名です。v0.1 などを指定してください。"
     exit 1
   fi
-  
-#  check_project_is_feature_branch "xlogin-jp-client-sample" $FEATURE_VERSION
-#  check_status_is_clean "xlogin-jp-client-sample"
-#  push_project "xlogin-jp-client-sample" $FEATURE_VERSION "origin" "origin"
-#
-#  check_project_is_feature_branch "xlogin-jp" $FEATURE_VERSION
-#  check_status_is_clean "xlogin-jp"
-#  push_project "xlogin-jp" $FEATURE_VERSION "origin" "origin"
  
-#  check_project_is_feature_branch "xdevkit" $FEATURE_VERSION
-#  check_status_is_clean "xdevkit"
+  check_project_is_feature_branch "xlogin-jp-client-sample" $FEATURE_VERSION
+  check_status_is_clean "xlogin-jp-client-sample"
+  push_project "xlogin-jp-client-sample" $FEATURE_VERSION "origin" "origin"
+
+  check_project_is_feature_branch "xlogin-jp" $FEATURE_VERSION
+  check_status_is_clean "xlogin-jp"
+  push_project "xlogin-jp" $FEATURE_VERSION "origin" "origin"
  
-#  update_submodule "xdevkit" $FEATURE_VERSION
-#  switch_gitmodules_master "xdevkit"
+  check_project_is_feature_branch "xdevkit" $FEATURE_VERSION
+  check_status_is_clean "xdevkit"
+ 
+  update_submodule "xdevkit" $FEATURE_VERSION
+  switch_gitmodules_master "xdevkit"
+  commit_submodule "xdevkit"
 
   push_project "xdevkit" $FEATURE_VERSION "origin" "origin"
 
-  echo "success"
-  echo "You must all merge pull request."
+  echo "Merge all pull requests, then exec ./complete_merge.sh"
 }
 
 main ${1:-0}

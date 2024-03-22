@@ -40,12 +40,18 @@ function main () {
     exit 1
   fi
 
-#  delete_project_new_branch "xlogin-jp-client-sample" $NEXT_VERSION origin
-#  delete_project_new_branch "xlogin-jp" $NEXT_VERSION origin
-#  delete_project_new_branch "xdevkit" $NEXT_VERSION origin
+  echo -n "開発中のブランチをresetします。続けますか？(y/n): "
+  read INPUT_VALUE
+  if [[ $INPUT_VALUE != "y" ]]; then
+    echo "終了します。"
+    exit 0
+  fi
+  
+  delete_project_new_branch "xlogin-jp-client-sample" $NEXT_VERSION origin
+  delete_project_new_branch "xlogin-jp" $NEXT_VERSION origin
+  delete_project_new_branch "xdevkit" $NEXT_VERSION origin
 
   switch_submodule_master "xdevkit"
-
 }
  
 main ${1:-0}
