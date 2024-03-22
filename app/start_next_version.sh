@@ -102,7 +102,6 @@ function update_submodule () {
 
 function exec_make_commit () {
   PROJECT_DIR_PATH=$1
-  NEXT_VERSION=$2
   pushd $PROJECT_DIR_PATH > /dev/null
 
   make commit
@@ -134,7 +133,7 @@ function main () {
   
   update_submodule "xdevkit" $NEXT_VERSION
   
-  exec_make_commit "xdevkit" $NEXT_VERSION
+  exec_make_commit "xdevkit"
   push_project_new_branch "xdevkit" $NEXT_VERSION "origin"
 }
 
