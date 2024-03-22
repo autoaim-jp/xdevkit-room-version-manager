@@ -5,6 +5,7 @@ set -euo pipefail
 function check_project_is_master_branch () {
   PROJECT_DIR_PATH=$1
   pushd $PROJECT_DIR_PATH > /dev/null
+
   BRANCH=$(git branch --contains | cut -d " " -f 2 | tr -d '\n')
   if [ $BRANCH != "master" ]; then
     echo "[error] master ではありません。"
@@ -12,12 +13,14 @@ function check_project_is_master_branch () {
     exit 1
   fi
   echo "[info] ${PROJECT_DIR_PATH} は master です。"
+
   popd > /dev/null
 }
 
 function check_submodule_is_master_branch () {
   PROJECT_DIR_PATH=$1
   pushd $PROJECT_DIR_PATH > /dev/null
+
   BRANCH=$(git branch --contains | cut -d " " -f 2 | tr -d '\n')
   if [[ $BRANCH != "master" ]]; then
     if [[ $BRANCH = "(HEAD" ]]; then
@@ -35,6 +38,7 @@ function check_submodule_is_master_branch () {
     fi
   fi
   echo "[info] ${PROJECT_DIR_PATH} は master です。"
+
   popd > /dev/null
 }
 
@@ -42,6 +46,7 @@ function switch_project_new_branch () {
   PROJECT_DIR_PATH=$1
   NEXT_VERSION=$2
   pushd $PROJECT_DIR_PATH > /dev/null
+
   git checkout -b $NEXT_VERSION
 
   BRANCH=$(git branch --contains | cut -d " " -f 2 | tr -d '\n')
@@ -50,18 +55,21 @@ function switch_project_new_branch () {
     exit 1
   fi
   echo "[info] ${PROJECT_DIR_PATH} は ${NEXT_VERSION} に切り替わりました。"
+
   popd > /dev/null
 }
 
 function check_gitmodules_has_master_branch () {
   PROJECT_DIR_PATH=$1
   pushd $PROJECT_DIR_PATH > /dev/null
+
   ANOTHER_BRANCH_CNT=$(cat .gitmodules | (grep "branch = v0." || true ) | wc -l)
   if [[ $ANOTHER_BRANCH_CNT -ne 0 ]]; then
     echo "[error] master 以外のブランチのサブモジュールが存在します。"
     exit 1
   fi
   echo "[info] サブモジュールはすべて master です。"
+
   popd > /dev/null
 }
 
@@ -70,8 +78,10 @@ function push_project_new_branch () {
   NEXT_VERSION=$2
   ORIGIN=$3
   pushd $PROJECT_DIR_PATH > /dev/null
+
   git push $ORIGIN $NEXT_VERSION
   echo "[info] ${PROJECT_DIR_PATH} の ${NEXT_VERSION} をpushしました。"
+
   popd > /dev/null
 }
 
@@ -98,6 +108,7 @@ function exec_make_commit () {
   make commit
   make
   echo "[info] ${PROJECT_DIR_PATH} のサブモジュールの更新をcommitしました。"
+
   popd > /dev/null
 }
 
