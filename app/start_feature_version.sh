@@ -100,17 +100,6 @@ function update_submodule () {
   popd > /dev/null
 }
 
-function exec_make_commit () {
-  PROJECT_DIR_PATH=$1
-  pushd $PROJECT_DIR_PATH > /dev/null
-
-  make commit
-  make
-  echo "[info] ${PROJECT_DIR_PATH} のサブモジュールの更新をcommitしました。"
-
-  popd > /dev/null
-}
-
 function main () {
   FEATURE_VERSION=$1
   echo "[info] FEATURE_VERSION: $FEATURE_VERSION"
@@ -133,7 +122,6 @@ function main () {
   
   update_submodule "xdevkit" $FEATURE_VERSION
   
-  exec_make_commit "xdevkit"
   push_project_new_branch "xdevkit" $FEATURE_VERSION "origin"
 }
 

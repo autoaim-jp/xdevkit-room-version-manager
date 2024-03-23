@@ -9,8 +9,17 @@ function check_status_is_clean () {
   DIFF_CNT=$(git status -s 2> /dev/null | wc -l)
   if [[ $DIFF_CNT -ne 0 ]]; then
     echo "[error] ${PROJECT_DIR_PATH} にコミットされていない変更があります。"
-    exit 1
+    show_continue_prompt "コミットされていない変更を削除します。"
   fi
+
+  popd > /dev/null
+}
+
+function reset_project () {
+  PROJECT_DIR_PATH=$1
+  pushd $PROJECT_DIR_PATH > /dev/null
+
+  git checkout .
 
   popd > /dev/null
 }
@@ -42,7 +51,7 @@ function delete_project_new_branch () {
   pushd $PROJECT_DIR_PATH > /dev/null
 
   git checkout master > /dev/null 2>&1 || true
-  git branch -d $FEATURE_VERSION || true
+  git branch -D $FEATURE_VERSION || true
   git push $ORIGIN --delete $FEATURE_VERSION || true
   echo "[info] ${PROJECT_DIR_PATH} の ${FEATURE_VERSION} をdeleteしました。"
 
@@ -56,6 +65,7 @@ function reset_submodule () {
 
   SUBMODULE_DIR_PATH_LIST=$(cat .gitmodules | grep "path = " | awk '{ printf $3 "\n" }')
   echo "$SUBMODULE_DIR_PATH_LIST" | while read SUBMODULE_DIR_PATH; do
+    reset_project $SUBMODULE_DIR_PATH
     check_status_is_clean $SUBMODULE_DIR_PATH
     check_project_has_commit $SUBMODULE_DIR_PATH $FEATURE_VERSION "origin"
     delete_project_new_branch $SUBMODULE_DIR_PATH $FEATURE_VERSION "github"
@@ -84,14 +94,17 @@ function main () {
 
   show_continue_prompt "開発中のブランチをresetします。"
  
+  reset_project "xlogin-jp-client-sample"
   check_status_is_clean "xlogin-jp-client-sample"
   check_project_has_commit "xlogin-jp-client-sample" $FEATURE_VERSION "origin"
   delete_project_new_branch "xlogin-jp-client-sample" $FEATURE_VERSION "origin"
 
+  reset_project "xlogin-jp"
   check_status_is_clean "xlogin-jp"
   check_project_has_commit "xlogin-jp" $FEATURE_VERSION "origin"
   delete_project_new_branch "xlogin-jp" $FEATURE_VERSION "origin"
 
+  reset_project "xdevkit"
   check_status_is_clean "xdevkit"
   check_project_has_commit "xdevkit" $FEATURE_VERSION "origin"
   delete_project_new_branch "xdevkit" $FEATURE_VERSION "origin"
