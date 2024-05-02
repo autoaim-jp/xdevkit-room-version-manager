@@ -8,7 +8,7 @@ function update_project () {
   pushd $PROJECT_DIR_PATH > /dev/null
 
   git checkout master > /dev/null 2>&1 || true
-  git pull $ORIGIN_FROM master > /dev/null 2>&1
+  git pull $ORIGIN_FROM master
 
   popd > /dev/null
 }
