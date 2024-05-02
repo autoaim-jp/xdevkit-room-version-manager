@@ -83,7 +83,7 @@ function push_project () {
   pushd $PROJECT_DIR_PATH > /dev/null
 
   git fetch > /dev/null 2>&1
-  FEATURE_COMMIT_CNT=$(git log --oneline ${ORIGIN_FROM}/master..${ORIGIN_TO}/${FEATURE_VERSION} | wc -l)
+  FEATURE_COMMIT_CNT=$(git log --oneline ${ORIGIN_FROM}/master..${FEATURE_VERSION} | wc -l)
 
   popd > /dev/null
 
